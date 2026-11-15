@@ -1,4 +1,7 @@
 mne>=1.6
+mne-icalabel
+python-picard
+onnxruntime
 numpy
 scipy
 matplotlib
