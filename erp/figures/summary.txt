@@ -1,0 +1,6 @@
+sub-001: ICA removed 13 of 35 components; trials kept: standard 148, rare 36, loss 17, win 18
+sub-002: ICA removed 4 of 24 components; trials kept: standard 157, rare 38
+sub-003: ICA removed 7 of 30 components; trials kept: standard 159, rare 41
+sub-004: ICA removed 4 of 26 components; trials kept: standard 148, rare 36, loss 31, win 37
+oddball P3 at Pz: sub-001 +0.3, sub-002 +6.0, sub-003 +6.7, sub-004 +2.3; grand average +3.8 µV
+gambling reward positivity at FCz: sub-001 +1.8, sub-004 +1.4; grand average +1.6 µV
