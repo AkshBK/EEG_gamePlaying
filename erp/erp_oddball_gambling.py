@@ -89,9 +89,11 @@ def figure(task, erps, out):
     uv = lambda ev: ev.copy().pick([ch]).data[0] * 1e6
     effect = lambda ev: uv(ev)[(t >= win[0] * 1000) & (t <= win[1] * 1000)].mean()
 
-    fig = plt.figure(figsize=(17, 9), dpi=150)
-    gs = fig.add_gridspec(2, 12, height_ratios=[1, 1.35], hspace=0.45, wspace=1.2)
-    w_sub = 12 // n                                   # top row: subjects share the full width
+    ncol = min(n, 6)                                  # top: small multiples, 6 per row
+    nrow = int(np.ceil(n / ncol))
+    h_top = 2.3 * nrow + 1.0                          # inches: 2.3 per row + 1.0 for the titles
+    fig = plt.figure(figsize=(17, h_top + 5.0), dpi=150)
+    top, bottom = fig.subfigures(2, 1, height_ratios=[h_top, 5.0])
     lims = [min(min(uv(erps[s][c]).min() for s in subs for c in (a, b)), -2),
             max(max(uv(erps[s][c]).max() for s in subs for c in (a, b)), 2)]
     pad = 0.08 * (lims[1] - lims[0])
@@ -104,19 +106,31 @@ def figure(task, erps, out):
         for s in ("top", "right"):
             ax.spines[s].set_visible(False)
 
-    # top row: one panel per subject
+    # top: one small panel per subject (same y-scale everywhere)
+    axs = np.atleast_1d(top.subplots(nrow, ncol, sharex=True, sharey=True)).ravel()
     for i, s in enumerate(subs):
-        ax = fig.add_subplot(gs[0, i * w_sub:(i + 1) * w_sub])
-        ax.plot(t[sel], uv(erps[s][b])[sel], color=C_REF, lw=1.3, label=f"{b} ({erps[s][b].nave} trials)")
-        ax.plot(t[sel], uv(erps[s][a])[sel], color=C_MAIN, lw=1.6, label=f"{a} ({erps[s][a].nave} trials)")
+        ax = axs[i]
+        ax.plot(t[sel], uv(erps[s][b])[sel], color=C_REF, lw=1.1)
+        ax.plot(t[sel], uv(erps[s][a])[sel], color=C_MAIN, lw=1.4)
         decorate(ax)
-        ax.set(title=f"{s}: {a} − {b} = {effect(diffs[i]):+.1f} µV", xlabel="Time (ms)", ylim=ylim)
-        if i == 0:
-            ax.set_ylabel(f"µV at {ch}")
-        ax.legend(frameon=False, fontsize=8, loc="upper left")
+        ax.set(ylim=ylim)
+        ax.set_title(f"{s}: {effect(diffs[i]):+.1f} µV\n{erps[s][a].nave} {a} / {erps[s][b].nave} {b}", fontsize=9)
+        if i % ncol == 0:
+            ax.set_ylabel(f"µV at {ch}", fontsize=9)
+        if i >= n - ncol:
+            ax.set_xlabel("Time (ms)", fontsize=9)
+        ax.tick_params(labelsize=8, labelbottom=True)
+    for ax in axs[n:]:
+        ax.set_visible(False)
+    top.suptitle(f"{title}: does the {comp} stand out? ({n} subjects, filter 0.1–40 Hz + ICA)\n"
+                 f"Each subject's average: {a} (orange) vs {b} (blue); "
+                 f"panel title = {a} − {b} in the {win[0] * 1000:.0f}–{win[1] * 1000:.0f} ms window",
+                 fontsize=12, y=1 - 0.08 / h_top, va="top")
+    top.subplots_adjust(top=1 - 1.0 / h_top, bottom=0.5 / h_top, hspace=0.95, wspace=0.18, left=0.05, right=0.98)
+    gs = bottom.add_gridspec(1, 12, wspace=1.2, top=0.9, bottom=0.11, left=0.05, right=0.98)
 
     # bottom row: grand average + scalp map
-    ax = fig.add_subplot(gs[1, :9])
+    ax = bottom.add_subplot(gs[0, :9])
     se = np.std([uv(d) for d in diffs], axis=0, ddof=1) / np.sqrt(n) if n > 1 else 0 * t
     ax.plot(t[sel], uv(ga[b])[sel], color=C_REF, lw=2, label=b)
     ax.plot(t[sel], uv(ga[a])[sel], color=C_MAIN, lw=2.4, label=a)
@@ -129,7 +143,7 @@ def figure(task, erps, out):
            xlabel=f"Time after the {'picture' if task == 'oddball' else 'feedback'} (ms)", ylabel=f"µV at {ch}")
     ax.legend(frameon=False, fontsize=9, loc="upper left" if task == "oddball" else "lower left")
 
-    ax = fig.add_subplot(gs[1, 9:])
+    ax = bottom.add_subplot(gs[0, 9:])
     m = ga_d.copy().crop(*win).data.mean(1) * 1e6
     lim = np.abs(m).max()
     im, _ = mne.viz.plot_topomap(m, ga_d.info, axes=ax, show=False, cmap="RdBu_r", vlim=(-lim, lim),
@@ -138,7 +152,6 @@ def figure(task, erps, out):
     fig.colorbar(im, ax=ax, shrink=0.7).set_label("µV")
     ax.set_title(f"{a} − {b}, {win[0] * 1000:.0f}–{win[1] * 1000:.0f} ms\n(white dot = {ch})", fontsize=10)
 
-    fig.suptitle(f"{title}: does the {comp} stand out? (filter 0.1–40 Hz + ICA)", fontsize=13, y=0.995)
     fig.savefig(out, bbox_inches="tight"); plt.close(fig)
     return {s: effect(d) for s, d in zip(subs, diffs)}, effect(ga_d)
 
