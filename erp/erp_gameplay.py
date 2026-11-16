@@ -2,7 +2,8 @@
 
 Same cleaning and averaging as erp_oddball_gambling.py:
     1-3. load, filter 0.1-40 Hz + average reference, ICA (ICLabel eye/heart/muscle removed)
-    4.   epochs -0.5..1.0 s, baseline -200..0 ms, drop epochs > 200 µV peak-to-peak
+    4.   epochs -0.5..1.0 s, baseline -200..0 ms, drop epochs > 200 µV peak-to-peak;
+         drop the subject if any game event keeps less than 50% of its epochs
     5.   average the epochs of each event type within each subject
     6.   grand average = mean of the subjects' ERPs (every subject counts equally)
 
@@ -25,7 +26,7 @@ import matplotlib.pyplot as plt
 import mne
 from scipy import stats
 
-from erp_oddball_gambling import clean_raw, epoch, REJECT_PTP, C_MAIN, MUTED, BAND
+from erp_oddball_gambling import clean_raw, epoch, keep_check, REJECT_PTP, MIN_KEEP, C_MAIN, MUTED, BAND
 
 GAME_EVENTS = {"S 90": 90, "S 91": 91, "S 92": 92, "S 93": 93, "S 94": 94, "S 97": 97}
 GAME_NAMES = {"shoot": 90, "wall": 91, "enemy": 92, "star": 93, "ammo": 94, "hit": 97}
@@ -143,6 +144,11 @@ def main():
         erps[sub], note = subject_erps(args.data_root, sub, args.cache)
         counts = ", ".join(f"{k} {erps[sub][k].nave}" for k in ORDER + ["null"] if k in erps[sub])
         lines.append(f"{sub}: {note}; epochs kept: {counts}")
+        ok, low = keep_check(args.data_root, sub, "02", GAME_EVENTS, GAME_NAMES,
+                             {k: e.nave for k, e in erps[sub].items()})
+        if not ok:
+            lines[-1] += f"  -> DROPPED, less than {MIN_KEEP:.0%} kept: {low}"
+            del erps[sub]
         print(lines[-1], flush=True)
 
     res = figure(erps, os.path.join(args.out_dir, f"3_gameplay_events_{CH}.png"))

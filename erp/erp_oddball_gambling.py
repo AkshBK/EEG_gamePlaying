@@ -5,7 +5,8 @@ Per subject:
     2. band-pass 0.1-40 Hz on the continuous recording, average reference
     3. ICA (fitted on a 1-100 Hz copy); remove components ICLabel calls
        eye or heart (> 0.8) or muscle (> 0.95)
-    4. epochs -0.5..1.0 s, baseline -200..0 ms, drop epochs > 200 µV peak-to-peak
+    4. epochs -0.5..1.0 s, baseline -200..0 ms, drop epochs > 200 µV peak-to-peak;
+       drop the subject if any condition keeps less than 50% of its trials
     5. AVERAGE the trials of each condition -> one ERP per condition per subject
 Across subjects:
     6. GRAND AVERAGE = mean of the subjects' ERPs (every subject counts equally)
@@ -34,6 +35,7 @@ EVENTS = {"S 22": 1, "S 25": 2, "S 51": 3, "S 52": 4}
 NAMES = {"standard": 1, "rare": 2, "loss": 3, "win": 4}
 VENTRAL = ["FT9", "FT10", "TP9", "TP10"]
 REJECT_PTP = 200e-6
+MIN_KEEP = 0.50      # drop a subject's recording if any condition keeps < 50% of its trials (decided on data quality)
 ICA_KW = dict(n_components=0.99, method="picard", random_state=42, max_iter=1000,
               fit_params=dict(ortho=False, extended=True))
 IC_RULE = {"eye blink": 0.80, "heart beat": 0.80, "muscle artifact": 0.95}
@@ -49,7 +51,7 @@ MUTED, BAND = "#5d6270", "#e4e2d9"
 
 def clean_raw(root, sub, run="01"):
     """Steps 1-3: load, filter 0.1-40 Hz + average reference, ICA. Returns the cleaned recording."""
-    f = glob.glob(os.path.join(root, sub, "eeg", f"{sub}_*run-{run}_eeg.set"))[0]
+    f = raw_file(root, sub, run)
     raw = mne.io.read_raw_eeglab(f, preload=True)
     raw.set_channel_types({"VEOG": "eog", "HEOG": "eog"})
     raw = mne.add_reference_channels(raw, "CPz")
@@ -79,6 +81,20 @@ def epoch(data, events, names, shift_ms=0.0):
                     preload=True, reject_by_annotation=False)
     keep = np.where(np.ptp(ep.get_data(), axis=2).max(1) <= REJECT_PTP)[0]
     return ep[keep]
+
+
+def raw_file(root, sub, run):
+    return glob.glob(os.path.join(root, sub, "eeg", f"{sub}_*run-{run}_eeg.set"))[0]
+
+
+def keep_check(root, sub, run, events, names, kept):
+    """Fraction of each condition's trials kept; returns (ok, text). kept: {condition: n kept}."""
+    desc = list(mne.read_annotations(raw_file(root, sub, run)).description)
+    total = {k: desc.count(code) for code, v in events.items() for k, vv in names.items() if vv == v}
+    frac = {k: kept.get(k, 0) / n for k, n in total.items() if n > 0}
+    low = {k: f for k, f in frac.items() if f < MIN_KEEP}
+    text = ", ".join(f"{k} {kept.get(k, 0)}/{total[k]} ({f:.0%})" for k, f in low.items())
+    return not low, text
 
 
 def preprocess(root, sub, shift_ms):
@@ -179,7 +195,12 @@ def main():
         ep, n_rm, n_ic = preprocess(args.data_root, sub, args.shift_ms)
         counts = ", ".join(f"{k} {len(ep[k])}" for k in ep.event_id)
         lines.append(f"{sub}: ICA removed {n_rm} of {n_ic} components; trials kept: {counts}")
+        ok, low = keep_check(args.data_root, sub, "01", EVENTS, NAMES, {k: len(ep[k]) for k in ep.event_id})
+        if not ok:
+            lines[-1] += f"  -> DROPPED, less than {MIN_KEEP:.0%} kept: {low}"
         print(lines[-1], flush=True)
+        if not ok:
+            continue
         for task, (_, a, b, *_rest) in TASKS.items():
             if a in ep.event_id and b in ep.event_id:
                 erps[task][sub] = {c: ep[c].average() for c in (a, b)}     # step 5

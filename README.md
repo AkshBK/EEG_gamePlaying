@@ -1,6 +1,8 @@
-# ERPs in the oddball, gambling and video game tasks (ds003517, all 17 subjects)
+# ERPs in the oddball, gambling and video game tasks (ds003517, 17 subjects)
 
-Data: OpenNeuro **ds003517** (Cavanagh & Castellanos, 2016, *NeuroImage*), run-01.
+Data: OpenNeuro **ds003517** (Cavanagh & Castellanos, 2016, *NeuroImage*), run-01 (oddball and
+gambling) and run-02 (game play). **sub-007 is dropped from the oddball and gambling analyses**
+because its run-01 recording kept less than half of its trials (see *When to drop a subject*).
 Questions, after cleaning with ICA:
 - Oddball and gambling (run-01): does the **P3** stand out for rare pictures, and the **reward positivity** for wins?
 - Continuous game play (run-02): which **game events** stand out from ongoing play?
@@ -9,39 +11,41 @@ Questions, after cleaning with ICA:
 
 ![Oddball](erp/figures/1_oddball_P3_Pz.png)
 
-**Oddball, P3 at Pz (17 subjects).** Rare pictures give a larger positive wave than standard
+**Oddball, P3 at Pz (16 subjects).** Rare pictures give a larger positive wave than standard
 pictures between 300 and 500 ms. The difference is strongest over the back-centre of the head,
 as expected for a P3.
 
 | | effect at Pz, 300–500 ms |
 |---|---|
-| Grand average, rare − standard | **+5.1 µV** (± 0.7 SE across subjects) |
-| Subjects with a positive effect | **17 of 17** |
-| One-sample t-test across subjects | t(16) = 7.2, p < 0.001 |
+| Grand average, rare − standard | **+4.7 µV** (± 0.6 SE across subjects) |
+| Subjects with a positive effect | **16 of 16** |
+| One-sample t-test across subjects | t(15) = 8.2, p < 0.001 |
 
 ![Gambling](erp/figures/2_gambling_RewP_FCz.png)
 
-**Gambling feedback, reward positivity at FCz (14 subjects).** Wins give a more positive wave
+**Gambling feedback, reward positivity at FCz (13 subjects).** Wins give a more positive wave
 than losses around 220–320 ms, strongest over the front-centre of the head.
 
 | | effect at FCz, 220–320 ms |
 |---|---|
-| Grand average, win − loss | **+2.1 µV** (± 0.2 SE across subjects) |
-| Subjects with a positive effect | **14 of 14** |
-| One-sample t-test across subjects | t(13) = 8.9, p < 0.001 |
+| Grand average, win − loss | **+2.1 µV** (± 0.3 SE across subjects) |
+| Subjects with a positive effect | **13 of 13** |
+| One-sample t-test across subjects | t(12) = 8.2, p < 0.001 |
 
-sub-002, sub-003 and sub-005 have no gambling trials in run-01, so the gambling figure has 14 subjects.
+sub-002, sub-003 and sub-005 have no gambling trials in run-01, and sub-007 is dropped, so the
+gambling figure has 13 subjects.
 
 ### Each subject's effect, oddball and gambling (µV)
 
 | | 001 | 002 | 003 | 004 | 005 | 006 | 007 | 008 | 009 | 010 | 011 | 012 | 013 | 014 | 015 | 016 | 017 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| P3, rare − standard | +0.3 | +6.0 | +6.7 | +2.3 | +3.4 | +4.8 | +12.8 | +8.6 | +5.3 | +5.3 | +4.5 | +2.5 | +2.7 | +4.5 | +9.2 | +3.8 | +4.9 |
-| RewP, win − loss | +1.8 | – | – | +1.4 | – | +2.2 | +2.6 | +1.6 | +1.0 | +2.1 | +2.2 | +4.5 | +1.6 | +2.9 | +1.3 | +1.7 | +2.9 |
+| P3, rare − standard | +0.3 | +6.0 | +6.7 | +2.3 | +3.4 | +4.8 | dropped | +8.6 | +5.3 | +5.3 | +4.5 | +2.5 | +2.7 | +4.5 | +9.2 | +3.8 | +4.9 |
+| RewP, win − loss | +1.8 | – | – | +1.4 | – | +2.2 | dropped | +1.6 | +1.0 | +2.1 | +2.2 | +4.5 | +1.6 | +2.9 | +1.3 | +1.7 | +2.9 |
 
 ![Game play](erp/figures/3_gameplay_events_Cz.png)
 
-**Continuous game play, six game events at Cz (17 subjects).** These are the six events the
+**Continuous game play, six game events at Cz (17 subjects).** sub-007 stays in here: its
+game play recording is clean (at least 91% of every game event kept). These are the six events the
 authors analysed, measured at Cz as in their script. Each event is compared with **null epochs**:
 500 random moments of gameplay per subject, cleaned and averaged the same way. If an event did
 nothing, its curve would lie on the grey null line. The effect is event − null, mean of 300–500 ms
@@ -84,7 +88,7 @@ Trials kept after cleaning (oddball and gambling, run-01) and the number of ICA 
 | sub-004 | 148 | 36 | 31 | 37 | 4 of 26 |
 | sub-005 | 155 | 39 | – | – | 7 of 18 |
 | sub-006 | 156 | 41 | 120 | 120 | 11 of 31 |
-| sub-007 | 65 | 19 | 40 | 38 | 3 of 29 |
+| sub-007 | 65 | 19 | 40 | 38 | 3 of 29 (dropped) |
 | sub-008 | 102 | 24 | 28 | 31 | 1 of 31 |
 | sub-009 | 158 | 39 | 40 | 40 | 5 of 21 |
 | sub-010 | 159 | 40 | 40 | 40 | 4 of 26 |
@@ -98,33 +102,35 @@ Trials kept after cleaning (oddball and gambling, run-01) and the number of ICA 
 
 ## When to drop a subject
 
-**No subject is dropped at the moment.** The rule for dropping someone has to be decided
-**before** looking at the results, and must be about **data quality**, never about the size of
-the effect. Dropping sub-001 because its P3 is small would be cherry-picking.
+**Our rule: a recording is dropped if any condition keeps less than 50% of its trials** after the
+200 µV rejection. The scripts apply it automatically (`MIN_KEEP` in `erp_oddball_gambling.py`) and
+print `DROPPED` in the summary. The rule is about **data quality**, never about the size of the
+effect: dropping sub-001 because its P3 is small would be cherry-picking. It is applied per
+recording, so sub-007 is dropped from run-01 (oddball and gambling) but kept in run-02 (game play).
 
-Usual reasons to drop a subject:
+Usual reasons to drop a subject (only the first one is automatic here):
 1. **Too few clean trials:** for example, less than 50% of the trials of any condition kept.
 2. **A broken recording:** many bad channels, the cap moved, or the file is damaged.
 3. **The person did not do the task:** for example, they fell asleep or pressed at random.
 
 Trials kept in the oddball task (all other subjects keep at least 85% of each condition):
 
-| | standard kept | rare kept | under a "keep ≥ 50%" rule |
+| | standard kept | rare kept | result |
 |---|---|---|---|
-| sub-007 | 65 of 156 (42%) | 19 of 44 (43%) | **drop** |
+| sub-007 | 65 of 156 (42%) | 19 of 44 (43%) | **dropped** |
 | sub-008 | 102 of 160 (64%) | 24 of 40 (60%) | keep |
 | sub-001 | 148 of 159 (93%) | 36 of 41 (88%) | keep (small effect, good data) |
 
-Without sub-007 the oddball P3 grand average would be about +4.7 µV instead of +5.1 µV, and every
-remaining subject is still positive, so the conclusion does not depend on this choice.
-In the game play data every subject keeps at least 78% of the null epochs.
+With sub-007 the oddball P3 grand average was +5.1 µV (17 of 17 positive); without it, +4.7 µV
+(16 of 16 positive), so the conclusion does not depend on this choice. In the game play data every
+subject keeps at least 80% of every game event, so nobody is dropped there.
 
 ## Caveats
 
 - Times are from the trigger. The screen shows each picture **40 ms later**, so the true
   latencies are about 40 ms earlier. Add `--shift-ms 40` to correct this.
-- sub-007 and sub-008 lost many oddball trials to the 200 µV rule (65 and 102 of about 160
-  standard trials kept), so their averages are noisier.
+- sub-008 lost many oddball trials to the 200 µV rule (102 of 160 standard, 24 of 40 rare kept),
+  so its average is noisier, but it passes the 50% rule.
 - sub-001 had 13 of 35 ICA components removed, mostly labelled muscle, and has the weakest P3
   (+0.3 µV). Its components should be checked.
 - sub-006 has 120 win and 120 loss trials in run-01, about three times as many as the others.
