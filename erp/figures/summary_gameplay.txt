@@ -1,0 +1,25 @@
+sub-001: cached; epochs kept: shoot 1377, hit 763, star 1227, ammo 117, wall 247, enemy 149, null 497
+sub-002: cached; epochs kept: shoot 496, hit 292, star 665, ammo 49, wall 283, enemy 116, null 486
+sub-003: cached; epochs kept: shoot 395, hit 199, star 801, ammo 44, wall 671, enemy 104, null 478
+sub-004: cached; epochs kept: shoot 791, hit 360, star 979, ammo 58, wall 343, enemy 107, null 473
+sub-005: cached; epochs kept: shoot 947, hit 428, star 638, ammo 76, wall 166, enemy 84, null 496
+sub-006: cached; epochs kept: shoot 584, hit 207, star 1058, ammo 57, wall 384, enemy 135, null 492
+sub-007: cached; epochs kept: shoot 378, hit 260, star 563, ammo 38, wall 55, enemy 73, null 455
+sub-008: cached; epochs kept: shoot 875, hit 447, star 638, ammo 72, wall 117, enemy 92, null 389
+sub-009: cached; epochs kept: shoot 873, hit 514, star 986, ammo 74, wall 120, enemy 123, null 498
+sub-010: cached; epochs kept: shoot 464, hit 263, star 800, ammo 47, wall 422, enemy 96, null 497
+sub-011: cached; epochs kept: shoot 1188, hit 416, star 718, ammo 75, wall 104, enemy 111, null 500
+sub-012: cached; epochs kept: shoot 1365, hit 170, star 647, ammo 53, wall 547, enemy 89, null 480
+sub-013: cached; epochs kept: shoot 466, hit 340, star 726, ammo 53, wall 105, enemy 85, null 498
+sub-014: cached; epochs kept: shoot 853, hit 547, star 643, ammo 80, wall 82, enemy 85, null 496
+sub-015: cached; epochs kept: shoot 686, hit 455, star 575, ammo 65, wall 301, enemy 67, null 494
+sub-016: cached; epochs kept: shoot 878, hit 450, star 1076, ammo 74, wall 210, enemy 146, null 496
+sub-017: cached; epochs kept: shoot 649, hit 244, star 751, ammo 54, wall 204, enemy 100, null 484
+
+event − null at Cz, 300-500 ms:
+  shoot   +3.1 µV, 17/17 subjects > 0, t(16) = 8.8, p = 1.5e-07; per subject: +2.8 +6.1 +5.1 +4.5 +2.2 +3.1 +4.6 +2.5 +3.5 +2.8 +1.6 +0.8 +4.2 +1.9 +1.1 +4.1 +2.3
+  hit     +4.2 µV, 17/17 subjects > 0, t(16) = 9.1, p = 1.1e-07; per subject: +3.0 +7.1 +8.4 +3.2 +3.0 +3.9 +6.6 +2.1 +4.0 +3.7 +3.8 +2.3 +5.2 +2.4 +1.6 +5.6 +4.8
+  star    +0.6 µV, 14/17 subjects > 0, t(16) = 3.1, p = 0.0064; per subject: +0.6 +0.7 +0.2 +1.6 +0.5 +0.3 +2.3 -0.2 +0.2 -0.2 +0.0 +1.0 +1.7 +0.9 +1.3 -0.9 +0.1
+  ammo    +1.3 µV, 14/17 subjects > 0, t(16) = 4.7, p = 0.00022; per subject: +0.8 -0.1 +3.1 +0.7 +1.9 +1.7 +3.3 +1.2 +0.5 -0.8 +1.7 +2.0 +1.6 +1.6 +1.6 -0.3 +0.8
+  wall    +2.8 µV, 16/17 subjects > 0, t(16) = 6.0, p = 2e-05; per subject: +2.3 +3.8 +1.5 +2.5 +2.9 +2.4 +7.9 -0.8 +2.8 +1.2 +2.1 +2.2 +4.3 +4.1 +3.5 +0.3 +4.6
+  enemy   +5.2 µV, 17/17 subjects > 0, t(16) = 9.4, p = 6.6e-08; per subject: +4.9 +9.4 +5.6 +6.6 +5.6 +6.3 +9.2 +2.2 +5.0 +1.7 +3.3 +3.5 +5.5 +3.6 +3.2 +8.6 +5.0

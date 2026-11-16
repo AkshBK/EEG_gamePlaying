@@ -47,8 +47,9 @@ C_MAIN, C_REF, C_DIFF = "#eb6834", "#2a78d6", "#1d2230"
 MUTED, BAND = "#5d6270", "#e4e2d9"
 
 
-def preprocess(root, sub, shift_ms):
-    f = glob.glob(os.path.join(root, sub, "eeg", f"{sub}_*run-01_eeg.set"))[0]
+def clean_raw(root, sub, run="01"):
+    """Steps 1-3: load, filter 0.1-40 Hz + average reference, ICA. Returns the cleaned recording."""
+    f = glob.glob(os.path.join(root, sub, "eeg", f"{sub}_*run-{run}_eeg.set"))[0]
     raw = mne.io.read_raw_eeglab(f, preload=True)
     raw.set_channel_types({"VEOG": "eog", "HEOG": "eog"})
     raw = mne.add_reference_channels(raw, "CPz")
@@ -66,14 +67,23 @@ def preprocess(root, sub, shift_ms):
     ica.exclude = [i for i, (l, p) in enumerate(zip(lab["labels"], lab["y_pred_proba"]))
                    if l in IC_RULE and p > IC_RULE[l]]
     ica.apply(data)
+    return data, len(ica.exclude), ica.n_components_
 
-    ev, _ = mne.events_from_annotations(data, event_id=EVENTS)
+
+def epoch(data, events, names, shift_ms=0.0):
+    """Step 4: epochs -0.5..1.0 s, baseline -200..0 ms, drop epochs > 200 µV peak-to-peak."""
+    ev, _ = mne.events_from_annotations(data, event_id=events)
     ev[:, 0] += int(round(shift_ms / 1000 * data.info["sfreq"]))
-    ids = {k: v for k, v in NAMES.items() if v in ev[:, 2]}
+    ids = {k: v for k, v in names.items() if v in ev[:, 2]}
     ep = mne.Epochs(data, ev, ids, tmin=-0.5, tmax=1.0, baseline=(-0.2, 0.0), picks="eeg",
                     preload=True, reject_by_annotation=False)
     keep = np.where(np.ptp(ep.get_data(), axis=2).max(1) <= REJECT_PTP)[0]
-    return ep[keep], len(ica.exclude), ica.n_components_
+    return ep[keep]
+
+
+def preprocess(root, sub, shift_ms):
+    data, n_rm, n_ic = clean_raw(root, sub, "01")
+    return epoch(data, EVENTS, NAMES, shift_ms), n_rm, n_ic
 
 
 def figure(task, erps, out):
